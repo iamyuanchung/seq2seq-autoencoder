@@ -6,12 +6,12 @@ import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
 
 
-class LSTMAE(object):
-    """ Long Short Term Memory AutoEncoder
+class SA(object):
+    """ Long Short-Term Memory Sequence-to-Sequence Autoencoder
         (with peephole connections)
 
-        Reference: [1] http://christianherta.de/lehre/dataScience/machineLearning/neuralNetworks/LSTM.php
-                   [2] http://colah.github.io/posts/2015-08-Understanding-LSTMs/
+        References: [1] http://christianherta.de/lehre/dataScience/machineLearning/neuralNetworks/LSTM.php
+                    [2] http://colah.github.io/posts/2015-08-Understanding-LSTMs/
     """
 
     def __init__(self, input, n_in, n_hidden, n_out, reverse=False, corruption_level=0.):
@@ -24,8 +24,6 @@ class LSTMAE(object):
 
         self.input = input
 
-        # TODO: Masking noise - a fraction v of the elements of x (chosen at random for each example)
-        #       is forced to 0;
         numpy_rng = np.random.RandomState(123)
         self.theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
         self.corruption_level = corruption_level
@@ -105,8 +103,6 @@ class LSTMAE(object):
 
         [self.h_vals, self.c_vals], _ = theano.scan(
             fn=lstm_step,
-            # sequences=self.input,
-            # TODO: input is the original sequence with masking noise
             sequences=self.corrupted_input,
             outputs_info=[self.h0, self.c0]
         )
@@ -174,10 +170,8 @@ class LSTMAE(object):
         )
 
         if reverse:
-            # Please refer to: http://www.csie.ntu.edu.tw/~b01902040/doc/lstmae_rev_true.png
             self.mse = T.mean((self.yr_vals[::-1] - self.input) ** 2)
         else:
-            # Please refer to: http://www.csie.ntu.edu.tw/~b01902040/doc/lstmae_rev_false.png
             self.mse = T.mean((self.yr_vals - self.input) ** 2)
 
     def train(self, X_train, X_test, n_epochs, learning_rate, save_steps, feature_range):
@@ -235,7 +229,7 @@ class LSTMAE(object):
             name='reconstruct_model'
         )
 
-        print 'training LSTMAE model ...'
+        print 'training the SA model ...'
         # optimize the model parameters using stochastic gradient descent
         train_order = np.arange(n_train)
         for epoch in xrange(n_epochs):
@@ -245,9 +239,6 @@ class LSTMAE(object):
             for index in train_order:
                 batch_cost = train_model(X_train[index])
                 total_batch_cost += batch_cost
-                # print '    batch #%d: %f' % (index + 1, batch_cost)
-            # print 'original input: \n' + str((X_train[-1][3] + 1) / 2 * (f_max - f_min) + f_min)
-            # print 'reconstruct output: \n' + str(((reconstruct_model(X_train[-1])[3]) + 1) / 2 * (f_max - f_min) + f_min)
             print 'average train batch cost = %f' % (total_batch_cost / n_train)
             test_batch_cost = np.zeros(n_test)
             for index in xrange(n_test):
