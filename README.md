@@ -1,8 +1,8 @@
 # Sequence-to-Sequence Autoencoder (SA)
 
-Theano implementation of SA proposed in [Audio Word2Vec: Unsupervised Learning of Audio Segment Representations using Sequence-to-Sequence Autoencoder](http://people.csail.mit.edu/andyyuan/docs/interspeech-16.audio2vec.paper.pdf), in *Proceedings of the 17th Annual Conference of the International Speech Communication Association (INTERSPEECH)*, 2016.
+Theano implementation of the SA model proposed in [Audio Word2Vec: Unsupervised Learning of Audio Segment Representations using Sequence-to-Sequence Autoencoder](http://people.csail.mit.edu/andyyuan/docs/interspeech-16.audio2vec.paper.pdf), in *Proceedings of the 17th Annual Conference of the International Speech Communication Association (INTERSPEECH)*, 2016.
 
-If you use the code, please consider cite the paper as:
+If you use the code, please cite the paper as:
 ```
 @inproceedings{chung2016audio2vec,
   title     = {Audio word2vec: Unsupervised learning of audio segment representations using sequence-to-sequence autoencoder},
